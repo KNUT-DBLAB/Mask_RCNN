@@ -1,6 +1,16 @@
+#custimizing
+output_maeng/detection/*
+!output_maeng/detection/.keep
+output_maeng/logs/*
+!output_maeng/logs/.keep
+output_maeng/record_print/*
+!output_maeng/record_print/.keep
+
+
+
+
 # Data files and directories common in repo root
 datasets/
-logs/
 *.h5
 results/
 temp/

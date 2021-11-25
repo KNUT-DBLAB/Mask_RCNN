@@ -1,22 +1,6 @@
 from mrcnn import visualize
 
 import os
-
-# def main():
-#     path_images ="../../../dataset/deetas"
-#     image_single_path = ""
-#     visualize.display_images(image_single_path)
-    
-
-# def load_data(image_root_path):
-#     image_path_list = os.listdir(image_root_path)
-#     for img_path in image_path_list:
-#         img_path
-
-# main()
-
-
-import os
 import sys
 import time
 import numpy as np
@@ -42,6 +26,7 @@ import matplotlib.pyplot as plt
 
 ### Root directory of the project
 ROOT_DIR = os.path.abspath("../")
+CURRENT_DIR = os.path.abspath("./")
 
 ### Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
@@ -53,12 +38,12 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 
 ### Directory to save logs and model checkpoints, if not provided
 ### through the command line argument --logs
-DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
+DEFAULT_LOGS_DIR = os.path.join(CURRENT_DIR, "output_maeng/logs")
 DEFAULT_DATASET_YEAR = ""
 
-############################################################
+########################################################################################################################
 #  Configurations
-############################################################
+########################################################################################################################
 
 
 class Deetas_Config(Config):
@@ -80,9 +65,9 @@ class Deetas_Config(Config):
     NUM_CLASSES = 1 + 25  # Deetas has 25 classes
 
 
-############################################################
+########################################################################################################################
 #  Dataset
-############################################################
+########################################################################################################################
 
 class Deetas_Dataset(utils.Dataset):
     def load_deetas(self, dataset_dir, subset, class_ids=None,
@@ -100,9 +85,9 @@ class Deetas_Dataset(utils.Dataset):
 
         ### coco = COCO("{}/annotations/instances_{}{}.json".format(dataset_dir, subset, year))
         # json_deetas = COCO("{}/annotations/seg_{}.json".format(dataset_dir, subset)) # annotation path
-        json_deetas = COCO("{}/sample_json/S-W-P-003.json".format(dataset_dir)) # sample
+        json_deetas = COCO("{}/sample_21_10_21/N-B-C-008.json".format(dataset_dir)) # sample
         
-        image_dir = "{}/images".format(dataset_dir)
+        image_dir = "{}/data_21_10_21/image".format(dataset_dir)
         print(image_dir)
 
         ### Load all classes or a subset?
@@ -220,9 +205,9 @@ class Deetas_Dataset(utils.Dataset):
         return m
 
 
-############################################################
+########################################################################################################################
 #  COCO Evaluation
-############################################################
+########################################################################################################################
 
 def build_coco_results(dataset, image_ids, rois, class_ids, scores, masks):
     """Arrange resutls to match COCO specs in http://cocodataset.org/#format
@@ -274,7 +259,9 @@ def generate_mask(model, dataset_class, deetas_data, eval_type="bbox", limit=0, 
     results_list = []
     print("idx_image_ndarray", len(idx_image_ndarray))
     for idx_for, image_id in enumerate(idx_image_ndarray):
-        print("idx_for", idx_for)
+        print("idx_for :", idx_for)
+        if idx_for >= 100:
+            break
         ### Load image
         image = dataset_class.load_image(image_id)
 
@@ -305,7 +292,7 @@ def generate_mask(model, dataset_class, deetas_data, eval_type="bbox", limit=0, 
         # print(class_ids, class_names)
         
 
-        save_dir = '/home/dblab/maeng_space/git_repository/object_detection/result_Mask_RCNN/mask_rcnn'
+        save_dir = '/home/dblab/maeng_space/git_repository/object_detector/Mask_RCNN/output_maeng/detection/ex_02'
         ### apply_mask
         # color = visualize.random_colors(1)
         # image_with_mask = visualize.apply_mask(image, mask_ndarray, color)
@@ -326,8 +313,6 @@ def generate_mask(model, dataset_class, deetas_data, eval_type="bbox", limit=0, 
         #                                    detections["masks"].astype(np.uint8))
         # results_list.extend(image_results)
         
-        if idx_for % 10 == 0 :
-            print("predict_frame : ", idx_for)
 
     # print(len(results_list))
 
@@ -347,9 +332,9 @@ def generate_mask(model, dataset_class, deetas_data, eval_type="bbox", limit=0, 
     print("Total time: ", time.time() - t_start)
 
 
-############################################################
+########################################################################################################################
 #  Training
-############################################################
+########################################################################################################################
 
 
 if __name__ == '__main__':

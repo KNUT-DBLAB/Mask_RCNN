@@ -73,7 +73,7 @@ ROOT_MODEL_PATH = os.path.join(HOME_DIR, 'maeng_space/output_submodule/object_de
 # deetas20211207T1709 / # status (38) = 40%, 159.h5 / on GPU-01
 # deetas20211213T1844 / ? # object detector (25) = 159.h5 / on GPU-05
 
-CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211125T0942/mask_rcnn_deetas_0119.h5')
+CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
 
 
 # Directory to save logs and model checkpoints, if not provided
@@ -386,9 +386,9 @@ if __name__ == '__main__':
                         metavar="/path/to/logs/",
                         help='Logs and checkpoints directory (default=logs/)')
     parser.add_argument('--limit', required=False,
-                        default=500,
+                        default=1,
                         metavar="<image count>",
-                        help='Images to use for evaluation (default=500)')
+                        help='Images to use for evaluation (default=10000)')
     parser.add_argument('--download', required=False,
                         default=False,
                         metavar="<True|False>",

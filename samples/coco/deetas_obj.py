@@ -66,12 +66,12 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 ####### custom
 ROOT_MODEL_PATH = os.path.join(HOME_DIR, 'maeng_space/output_submodule/object_detector/Mask_RCNN/logs')
 
-# deetas20211109T1657 # ? / on GPU-04
-# deetas20211120T2030 # ? / on GPU-04
-# deetas20211125T0942 # object detector (25) = 25% / on GPU-04
-# deetas20211204T1611 # on_off (2) = 72% / on GPU-04
-# deetas20211207T1709 # ? / on GPU-01
-# deetas20211213T1844 # object detector (25) = ? / on GPU-05
+# deetas20211109T1657 / ? # ? / on GPU-04
+# deetas20211120T2030 / ? # ? / on GPU-04
+# deetas20211125T0942 / ? # object detector (25) = 25% / on GPU-04
+# deetas20211204T1611 / ? # on_off (2) = 72% / on GPU-04
+# deetas20211207T1709 / # status (38) = 40%, 159.h5 / on GPU-01
+# deetas20211213T1844 / ? # object detector (25) = 159.h5 / on GPU-05
 
 CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211125T0942/mask_rcnn_deetas_0119.h5')
 

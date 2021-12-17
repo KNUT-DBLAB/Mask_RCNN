@@ -386,7 +386,7 @@ if __name__ == '__main__':
                         metavar="/path/to/logs/",
                         help='Logs and checkpoints directory (default=logs/)')
     parser.add_argument('--limit', required=False,
-                        default=1,
+                        default=10000,
                         metavar="<image count>",
                         help='Images to use for evaluation (default=10000)')
     parser.add_argument('--download', required=False,

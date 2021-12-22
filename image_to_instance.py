@@ -48,7 +48,7 @@ ROOT_MODEL_PATH = os.path.join(HOME_DIR, 'maeng_space/output_submodule/object_de
 # deetas20211207T1709 / # status (38) = 40%, 159.h5 / on GPU-01
 # deetas20211213T1844 / ? # object detector (25) = 159.h5 / on GPU-05
 
-CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211207T1709/mask_rcnn_deetas_0159.h5')
+CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
 
 ### Directory to save logs and model checkpoints, if not provided
 ### through the command line argument --logs
@@ -76,7 +76,7 @@ class Deetas_Config(Config):
     GPU_COUNT = 1
 
     ### Number of classes (including background)
-    NUM_CLASSES = 38 + 1  # Deetas has 25 classes
+    NUM_CLASSES = 25 + 1  # Deetas has 25 classes
 
 
 ########################################################################################################################
@@ -103,7 +103,7 @@ class Deetas_Dataset(utils.Dataset):
         # json_deetas = COCO("{}/sample_21_10_21/N-B-C-008.json".format(dataset_dir)) # sample
         # annotation_path = "/home/dblab/maeng_space/output_submodule/deetas/data_21_12_02/json_obj/status_{}.json".format(subset)
         # annotation_path = "/home/dblab/maeng_space/output_submodule/object_detector/Mask_RCNN/N-E-U-005.json".format(subset)
-        annotation_path = "/home/dblab/maeng_space/output_submodule/object_detector/Mask_RCNN/N-B-P-015.json".format(subset)
+        annotation_path = "/home/dblab/maeng_space/output_submodule/object_detector/Mask_RCNN/S-W-P-013.json".format(subset)
         json_deetas = COCO(annotation_path)
         
         # image_dir = "{}/data_21_10_21/image".format(dataset_dir)
@@ -299,8 +299,8 @@ def generate_mask(model, dataset_class, deetas_data, eval_type="bbox", limit=0, 
         
 
         names = {}
-        with open('/home/dblab/maeng_space/dataset/deetas/class_list/deetas_status.names', 'r') as data:
-        # with open('/home/dblab/maeng_space/dataset/deetas/class_list/deetas_with_background.names', 'r') as data:
+        # with open('/home/dblab/maeng_space/dataset/deetas/class_list/deetas_status.names', 'r') as data:
+        with open('/home/dblab/maeng_space/dataset/deetas/class_list/deetas_with_background.names', 'r') as data:
             for ID, name in enumerate(data):
                 names[ID] = name.strip('\n')
         deetas_names_dict = names
@@ -313,7 +313,7 @@ def generate_mask(model, dataset_class, deetas_data, eval_type="bbox", limit=0, 
         # print(class_ids, class_names)
         
 
-        save_dir = '/home/dblab/maeng_space/output_submodule/object_detector/Mask_RCNN/gnerated_mask'
+        save_dir = '/home/dblab/maeng_space/output_submodule/object_detector/Mask_RCNN/generated_mask'
         ### apply_mask
         # color = visualize.random_colors(1)
         # image_with_mask = visualize.apply_mask(image, mask_ndarray, color)

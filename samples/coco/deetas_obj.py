@@ -51,9 +51,9 @@ from PIL import Image
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../")
-CURRENT_DIR = os.path.abspath("./")
 HOME_DIR = os.path.expanduser('~')
-OUTPUT_DIR = '/home/dblab/maeng_space/output_submodule/object_detector/Mask_RCNN'
+
+OUTPUT_DIR = '/home/dblab/maeng_space/dataset_2021/Deetas/output_Mask_RCNN'
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
@@ -64,7 +64,10 @@ from mrcnn import model as modellib, utils
 COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 
 ####### custom
-ROOT_MODEL_PATH = os.path.join(HOME_DIR, 'maeng_space/output_submodule/object_detector/Mask_RCNN/logs')
+ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
+ANNOTATION_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/data_21_12_02/json_act'
+IMAGE_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/image_integrated'
+TRAIN_DATA_CATEGOREIS = 'seg'
 
 # deetas20211109T1657 / ? # ? / on GPU-04
 # deetas20211120T2030 / ? # ? / on GPU-04
@@ -75,10 +78,9 @@ ROOT_MODEL_PATH = os.path.join(HOME_DIR, 'maeng_space/output_submodule/object_de
 
 CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
 
-
 # Directory to save logs and model checkpoints, if not provided
 # through the command line argument --logs
-DEFAULT_LOGS_DIR = os.path.join(OUTPUT_DIR, "logs")
+DEFAULT_LOGS_DIR = ROOT_MODEL_PATH
 DEFAULT_DATASET_YEAR = ""
 
 ###################################################################################################################
@@ -124,14 +126,13 @@ class CocoDataset(utils.Dataset):
         print("load_data module :", "\n")
         
         ### annotation path
-        # annotation_path = "/home/dblab/maeng_space/output_submodule/deetas/data_21_11_10/json_obj/on_off_{}.json".format(subset)
-        annotation_path = "/home/dblab/maeng_space/output_submodule/deetas/data_21_12_02/json_obj/seg_{}.json".format(subset)
+        annotation_path = os.path.join(ANNOTATION_ROOT_PATH, TRAIN_DATA_CATEGOREIS + '_{}.json'.format(subset))
         coco = COCO(annotation_path)
         print("annotation path :", annotation_path, "\n")
         
         ### image root path
         # image_dir = "{}/image".format(dataset_dir)
-        image_dir = '/home/dblab/maeng_space/dataset/deetas/image_integrated'
+        image_dir = IMAGE_ROOT_PATH
 
         print("****************************************************************************")
         print("image_root_path :", image_dir, "\n",)
@@ -371,7 +372,7 @@ if __name__ == '__main__':
     parser.add_argument("command",
                         metavar="<command>",
                         help="'train' or 'evaluate' on MS COCO")
-    parser.add_argument('--dataset', required=True,
+    parser.add_argument('--dataset', required=False,
                         metavar="/path/to/coco/",
                         help='Directory of the MS-COCO dataset')
     parser.add_argument('--year', required=False,

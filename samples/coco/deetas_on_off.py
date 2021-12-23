@@ -65,9 +65,9 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 
 ####### custom
 ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
-ANNOTATION_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/data_21_12_02/json_act'
+ANNOTATION_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/data_21_12_02/json_obj'
 IMAGE_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/image_integrated'
-TRAIN_DATA_CATEGOREIS = 'seg'
+TRAIN_DATA_CATEGOREIS = 'on_off'
 
 # deetas20211109T1657 / ? # ? / on GPU-04
 # deetas20211120T2030 / ? # ? / on GPU-04
@@ -77,6 +77,7 @@ TRAIN_DATA_CATEGOREIS = 'seg'
 # deetas20211213T1844 / ? # object detector (25) = 159.h5 / on GPU-05
 
 CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
+NUM_CLASSES = 2 + 1 # Deetas (25) with background
 
 # Directory to save logs and model checkpoints, if not provided
 # through the command line argument --logs
@@ -102,7 +103,7 @@ class Deetas_Config(Config):
     GPU_COUNT = 1
 
     # Number of classes (including background)
-    NUM_CLASSES = 2 + 1  # Deetas has 25 classes with background
+    NUM_CLASSES = NUM_CLASSES  # Deetas has 25 classes with background
 
 
 ###################################################################################################################

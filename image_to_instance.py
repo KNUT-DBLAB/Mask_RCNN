@@ -39,7 +39,7 @@ from mrcnn import model as modellib, utils
 COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 
 ####### custom
-ROOT_MODEL_PATH = os.path.join(HOME_DIR, 'maeng_space/output_submodule/object_detector/Mask_RCNN/logs')
+ROOT_MODEL_PATH = os.path.join(HOME_DIR, 'maeng_space/dataset_2021/Deetas/output_Mask_RCNN/logs')
 
 # deetas20211109T1657 / ? # ? / on GPU-04
 # deetas20211120T2030 / ? # ? / on GPU-04
@@ -48,7 +48,9 @@ ROOT_MODEL_PATH = os.path.join(HOME_DIR, 'maeng_space/output_submodule/object_de
 # deetas20211207T1709 / # status (38) = 40%, 159.h5 / on GPU-01
 # deetas20211213T1844 / ? # object detector (25) = 159.h5 / on GPU-05
 
-CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
+# CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
+# CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211207T1709/mask_rcnn_deetas_0159.h5')
+CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211204T1611/mask_rcnn_deetas_0119.h5')
 
 ### Directory to save logs and model checkpoints, if not provided
 ### through the command line argument --logs
@@ -58,8 +60,6 @@ DEFAULT_DATASET_YEAR = ""
 ########################################################################################################################
 #  Configurations
 ########################################################################################################################
-
-
 class Deetas_Config(Config):
     """Configuration for training on MS COCO.
     Derives from the base Config class and overrides values specific
@@ -76,7 +76,7 @@ class Deetas_Config(Config):
     GPU_COUNT = 1
 
     ### Number of classes (including background)
-    NUM_CLASSES = 25 + 1  # Deetas has 25 classes
+    NUM_CLASSES = 2 + 1  # Deetas has 25 classes
 
 
 ########################################################################################################################
@@ -102,12 +102,15 @@ class Deetas_Dataset(utils.Dataset):
         
         # json_deetas = COCO("{}/sample_21_10_21/N-B-C-008.json".format(dataset_dir)) # sample
         # annotation_path = "/home/dblab/maeng_space/output_submodule/deetas/data_21_12_02/json_obj/status_{}.json".format(subset)
-        # annotation_path = "/home/dblab/maeng_space/output_submodule/object_detector/Mask_RCNN/N-E-U-005.json".format(subset)
-        annotation_path = "/home/dblab/maeng_space/output_submodule/object_detector/Mask_RCNN/S-W-P-013.json".format(subset)
+        # annotation_path = "/home/dblab/maeng_space/dataset_2021/Deetas/data_21_12_02/json_raw/N-E-U-005.json".format(subset)
+        annotation_path = "/home/dblab/maeng_space/dataset_2021/Deetas/data_21_12_02/json_raw/N-B-P-021.json".format(subset)
+
+        # annotation_path = "/home/dblab/maeng_space/dataset_2021/Deetas/data_21_12_02/json_raw/N-PK-P-013.json".format(subset)
+        # annotation_path = "/home/dblab/maeng_space/dataset_2021/Deetas/data_21_12_02/json_raw/S-W-P-013.json".format(subset)
         json_deetas = COCO(annotation_path)
         
         # image_dir = "{}/data_21_10_21/image".format(dataset_dir)
-        image_dir = '/home/dblab/maeng_space/dataset/deetas/image_integrated'
+        image_dir = '/home/dblab/maeng_space/dataset_2021/Deetas/image_integrated'
         print(image_dir)
 
         ### Load all classes or a subset?
@@ -300,7 +303,7 @@ def generate_mask(model, dataset_class, deetas_data, eval_type="bbox", limit=0, 
 
         names = {}
         # with open('/home/dblab/maeng_space/dataset/deetas/class_list/deetas_status.names', 'r') as data:
-        with open('/home/dblab/maeng_space/dataset/deetas/class_list/deetas_with_background.names', 'r') as data:
+        with open('/home/dblab/maeng_space/dataset_2021/Deetas/class_list/deetas_on_off.names', 'r') as data:
             for ID, name in enumerate(data):
                 names[ID] = name.strip('\n')
         deetas_names_dict = names
@@ -313,7 +316,7 @@ def generate_mask(model, dataset_class, deetas_data, eval_type="bbox", limit=0, 
         # print(class_ids, class_names)
         
 
-        save_dir = '/home/dblab/maeng_space/output_submodule/object_detector/Mask_RCNN/generated_mask'
+        save_dir = '/home/dblab/maeng_space/dataset_2021/Deetas/output_Mask_RCNN/generated_mask'
         ### apply_mask
         # color = visualize.random_colors(1)
         # image_with_mask = visualize.apply_mask(image, mask_ndarray, color)
@@ -368,7 +371,7 @@ if __name__ == '__main__':
                         default='generate_mask',
                         metavar="<command>",
                         help="only generate_mask")
-    parser.add_argument('--dataset', required=True,
+    parser.add_argument('--dataset', required=False,
                         metavar="/path/to/coco/",
                         help='Directory of the any dataset')
     parser.add_argument('--model', required=True,

@@ -388,7 +388,8 @@ if __name__ == '__main__':
                         metavar="/path/to/logs/",
                         help='Logs and checkpoints directory (default=logs/)')
     parser.add_argument('--limit', required=False,
-                        default=10000,
+                        default=999999,
+                        # default=10,
                         metavar="<image count>",
                         help='Images to use for evaluation (default=10000)')
     parser.add_argument('--download', required=False,
@@ -499,7 +500,7 @@ if __name__ == '__main__':
         dataset_val = CocoDataset()
         coco = dataset_val.load_coco(args.dataset, "test", year=args.year, return_coco=True, auto_download=args.download)
         dataset_val.prepare()
-        print("Running COCO evaluation on {} images.".format(args.limit))
+        print("Running COCO evaluation on test images.")
         evaluate_coco(model, dataset_val, coco, "bbox", limit=int(args.limit))
     else:
         print("'{}' is not recognized. "

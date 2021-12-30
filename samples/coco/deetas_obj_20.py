@@ -74,7 +74,7 @@ ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
 # deetas20211213T1844 / ? # object detector (25) = 159.h5 / on GPU-05
 
 IMAGE_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/image_integrated'
-ANNOTATION_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/data_21_12_02/json_MaskRCNN'
+ANNOTATION_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/data_21_12_30/json_MaskRCNN'
 TRAIN_DATA_CATEGOREIS = 'seg'
 # TRAIN_DATA_CATEGOREIS = 'static_action'
 

@@ -75,7 +75,7 @@ ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
 
 IMAGE_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/image_integrated'
 ANNOTATION_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/data_21_12_30/json_MaskRCNN'
-# TRAIN_DATA_CATEGOREIS = 'seg'
+# TRAIN_DATA_CATEGOREIS = 'segmentation'
 TRAIN_DATA_CATEGOREIS = 'static_action'
 
 NUM_CLASSES = 21 + 1 # Deetas (25) with background

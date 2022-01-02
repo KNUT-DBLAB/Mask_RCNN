@@ -80,6 +80,10 @@ TRAIN_DATA_CATEGOREIS = 'segmentation'
 
 NUM_CLASSES = 18 + 1 # Deetas (25) with background
 
+FIRST_STAGE_EPOCH = 30
+SECOND_STAGE_EPOCH = 90
+THIRD_STAGE_EPOCH = 120
+
 CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
 
 # Directory to save logs and model checkpoints, if not provided
@@ -474,7 +478,7 @@ if __name__ == '__main__':
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
                     # epochs=40,
-                    epochs=30,
+                    epochs=FIRST_STAGE_EPOCH,
                     layers='heads',
                     augmentation=augmentation)
 
@@ -484,7 +488,7 @@ if __name__ == '__main__':
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
                     # epochs=120,
-                    epochs=90,
+                    epochs=SECOND_STAGE_EPOCH,
                     layers='4+',
                     augmentation=augmentation)
 
@@ -494,7 +498,7 @@ if __name__ == '__main__':
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE / 10,
                     # epochs=160,
-                    epochs=120,
+                    epochs=THIRD_STAGE_EPOCH,
                     layers='all',
                     augmentation=augmentation)
 

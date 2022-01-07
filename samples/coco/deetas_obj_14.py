@@ -74,15 +74,15 @@ ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
 # deetas20211213T1844 / ? # object detector (25) = 159.h5 / on GPU-05
 
 IMAGE_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/image_integrated'
-ANNOTATION_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/data_21_12_30/json_MaskRCNN'
+ANNOTATION_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/data_21_10_21/json_MaskRCNN'
 TRAIN_DATA_CATEGOREIS = 'segmentation'
 # TRAIN_DATA_CATEGOREIS = 'static_action'
 
-NUM_CLASSES = 18 + 1 # Deetas (25) with background
+NUM_CLASSES = 14 + 1 # Deetas (25) with background
 
-FIRST_STAGE_EPOCH = 30
-SECOND_STAGE_EPOCH = 90
-THIRD_STAGE_EPOCH = 120
+FIRST_STAGE_EPOCH = 40
+SECOND_STAGE_EPOCH = 120
+THIRD_STAGE_EPOCH = 160
 
 CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
 

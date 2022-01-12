@@ -73,8 +73,8 @@ ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
 # deetas20211207T1709 / # static_action (38) = 40%, 159.h5 / on GPU-01
 # deetas20211213T1844 / ? # object detector (25) = 159.h5 / on GPU-05
 
-IMAGE_ROOT_PATH = '../../../dataset_2021/Deetas/image_integrated'
-ANNOTATION_ROOT_PATH = '../../../dataset_2021/Deetas/data_21_10_21/json_MaskRCNN'
+IMAGE_ROOT_PATH = '../../../dataset_2021/Deetas/data_21_12_30/image'
+ANNOTATION_ROOT_PATH = '../../../dataset_2021/Deetas/data_21_12_30/json_MaskRCNN'
 TRAIN_DATA_CATEGOREIS = 'segmentation'
 # TRAIN_DATA_CATEGOREIS = 'static_action'
 

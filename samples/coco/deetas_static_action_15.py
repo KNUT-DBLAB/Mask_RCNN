@@ -53,7 +53,7 @@ from PIL import Image
 ROOT_DIR = os.path.abspath("../")
 HOME_DIR = os.path.expanduser('~')
 
-OUTPUT_DIR = '/home/dblab/maeng_space/dataset_2021/Deetas/output_Mask_RCNN'
+OUTPUT_DIR = '../../../dataset_2021/Deetas/output_Mask_RCNN'
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
@@ -66,19 +66,12 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 ####### custom
 ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
 
-# deetas20211109T1657 / ? # ? / on GPU-04
-# deetas20211120T2030 / ? # ? / on GPU-04
-# deetas20211125T0942 / ? # object detector (25) = 25% / on GPU-04
-# deetas20211204T1611 / ? # on_off (2) = 72% / on GPU-04
-# deetas20211207T1709 / # static_action (38) = 40%, 159.h5 / on GPU-01
-# deetas20211213T1844 / ? # object detector (25) = 159.h5 / on GPU-05
-
-IMAGE_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/image_integrated'
-ANNOTATION_ROOT_PATH = '/home/dblab/maeng_space/dataset_2021/Deetas/data_21_12_30/json_MaskRCNN'
+IMAGE_ROOT_PATH = '../../../dataset_2021/Deetas/image_integrated'
+ANNOTATION_ROOT_PATH = '../../../dataset_2021/Deetas/data_21_12_30/json_MaskRCNN'
 # TRAIN_DATA_CATEGOREIS = 'segmentation'
 TRAIN_DATA_CATEGOREIS = 'static_action'
 
-NUM_CLASSES = 21 + 1 # Deetas (25) with background
+NUM_CLASSES = 15 + 1
 
 CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
 

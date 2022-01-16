@@ -66,8 +66,8 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 ####### custom
 ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
 
-IMAGE_ROOT_PATH = '../../../dataset_2021/Deetas/data_21_12_30/image'
-ANNOTATION_ROOT_PATH = '../../../dataset_2021/Deetas/data_21_12_30/json_MaskRCNN'
+IMAGE_ROOT_PATH = '../../../dataset_2021/Deetas/data_22_01_05/image'
+ANNOTATION_ROOT_PATH = '../../../dataset_2021/Deetas/data_22_01_05/json_MaskRCNN'
 # TRAIN_DATA_CATEGOREIS = 'segmentation'
 TRAIN_DATA_CATEGOREIS = 'static_action'
 
@@ -310,6 +310,10 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
     eval_type: "bbox" or "segm" for bounding box or segmentation evaluation
     limit: if not 0, it's the number of images to use for evaluation
     """
+    print("****************************************************************************")
+    print("evaluate_mAP :", "\n")
+    print("limit :", limit)
+
     # Pick COCO images from the dataset
     image_ids = image_ids or dataset.image_ids
 
@@ -344,7 +348,19 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
     # Load results. This modifies results with additional attributes.
     coco_results = coco.loadRes(results)
 
-    # Evaluate
+    # Evaluate (each)
+    for catId in coco.getCatIds():
+        print("****************************************************************************")
+        print("categoty_id :", catId)
+        cocoEval = COCOeval(coco, coco_results, eval_type)
+        cocoEval.params.catIds = [catId]
+        cocoEval.evaluate()
+        cocoEval.accumulate()
+        cocoEval.summarize()
+
+    # Evaluate (all)
+    print("****************************************************************************")
+    print("categoty_id :", coco.getCatIds)
     cocoEval = COCOeval(coco, coco_results, eval_type)
     cocoEval.params.imgIds = coco_image_ids
     cocoEval.evaluate()
@@ -383,7 +399,7 @@ if __name__ == '__main__':
                         metavar="/path/to/logs/",
                         help='Logs and checkpoints directory (default=logs/)')
     parser.add_argument('--limit', required=False,
-                        default=10000,
+                        default=99999,
                         metavar="<image count>",
                         help='Images to use for evaluation (default=500)')
     parser.add_argument('--download', required=False,

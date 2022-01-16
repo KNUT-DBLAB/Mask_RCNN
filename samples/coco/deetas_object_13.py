@@ -66,15 +66,8 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 ####### custom
 ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
 
-# deetas20211109T1657 / ? # ? / on GPU-04
-# deetas20211120T2030 / ? # ? / on GPU-04
-# deetas20211125T0942 / ? # object detector (25) = 25% / on GPU-04
-# deetas20211204T1611 / ? # on_off (2) = 72% / on GPU-04
-# deetas20211207T1709 / # static_action (38) = 40%, 159.h5 / on GPU-01
-# deetas20211213T1844 / ? # object detector (25) = 159.h5 / on GPU-05
-
-IMAGE_ROOT_PATH = '../../../dataset_2021/Deetas/data_22_01_05/image'
-ANNOTATION_ROOT_PATH = '../../../dataset_2021/Deetas/data_22_01_05/json_MaskRCNN'
+IMAGE_ROOT_PATH = '../../../dataset_2021/Deetas/data_21_12_30/image'
+ANNOTATION_ROOT_PATH = '../../../dataset_2021/Deetas/data_21_12_30/json_MaskRCNN'
 TRAIN_DATA_CATEGOREIS = 'segmentation'
 # TRAIN_DATA_CATEGOREIS = 'static_action'
 
@@ -168,21 +161,6 @@ class CocoDataset(utils.Dataset):
         for i in class_ids:
             self.add_class("coco", i, coco.loadCats(i)[0]["name"])
 
-        # print(image_ids)
-        # exit()
-
-        ### Add images
-        
-        # test_path = os.path.join(image_dir, coco.imgs[407]['file_name'])
-        # print(test_path)
-        # image = Image.open(test_path)
-        # print(image)
-
-        # print(image_ids)
-        # print(len(image_ids))
-        # print(type(image_ids))
-        # print(type(image_ids[0]))
-        
         for i in image_ids:
             self.add_image(
                 "coco", image_id=i,
@@ -356,7 +334,19 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
     # Load results. This modifies results with additional attributes.
     coco_results = coco.loadRes(results)
 
-    # Evaluate
+    # Evaluate (each)
+    for catId in coco.getCatIds():
+        print("****************************************************************************")
+        print("categoty_id :", catId)
+        cocoEval = COCOeval(coco, coco_results, eval_type)
+        cocoEval.params.catIds = [catId]
+        cocoEval.evaluate()
+        cocoEval.accumulate()
+        cocoEval.summarize()
+
+    # Evaluate (all)
+    print("****************************************************************************")
+    print("categoty_id :", coco.getCatIds)
     cocoEval = COCOeval(coco, coco_results, eval_type)
     cocoEval.params.imgIds = coco_image_ids
     cocoEval.evaluate()

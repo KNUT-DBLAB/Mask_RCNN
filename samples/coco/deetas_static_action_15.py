@@ -66,8 +66,8 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 ####### custom
 ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
 
-IMAGE_ROOT_PATH = '../../../dataset_2021/Deetas/data_22_01_05/image'
-ANNOTATION_ROOT_PATH = '../../../dataset_2021/Deetas/data_22_01_05/json_MaskRCNN'
+IMAGE_ROOT_PATH = '../../../dataset_2021/Deetas/data_21_12_30/image'
+ANNOTATION_ROOT_PATH = '../../../dataset_2021/Deetas/data_21_12_30/json_MaskRCNN'
 # TRAIN_DATA_CATEGOREIS = 'segmentation'
 TRAIN_DATA_CATEGOREIS = 'static_action'
 

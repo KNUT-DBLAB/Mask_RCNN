@@ -51,8 +51,9 @@ from PIL import Image
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../")
-CURRENT_DIR = os.path.abspath("./")
-OUTPUT_DIR = '/home/dblab/maeng_space/output_submodule/object_detector/Mask_RCNN'
+HOME_DIR = os.path.expanduser('~')
+
+OUTPUT_DIR = '../../../dataset_2021/Deetas/output_Mask_RCNN'
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
@@ -62,10 +63,23 @@ from mrcnn import model as modellib, utils
 # Path to trained weights file
 COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 
+####### custom
+ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
+
+IMAGE_ROOT_PATH = '../../../dataset_2021/Deetas/data_21_12_30/image'
+ANNOTATION_ROOT_PATH = '../../../dataset_2021/Deetas/data_21_12_30/json_MaskRCNN'
+# TRAIN_DATA_CATEGOREIS = 'segmentation'
+TRAIN_DATA_CATEGOREIS = 'static_action'
+
+NUM_CLASSES = 15 + 1
+
+CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
+
 # Directory to save logs and model checkpoints, if not provided
 # through the command line argument --logs
-DEFAULT_LOGS_DIR = os.path.join(OUTPUT_DIR, "logs")
+DEFAULT_LOGS_DIR = ROOT_MODEL_PATH
 DEFAULT_DATASET_YEAR = ""
+
 
 ###################################################################################################################
 #  Configurations
@@ -86,7 +100,7 @@ class Deetas_Config(Config):
     GPU_COUNT = 1
 
     # Number of classes (including background)
-    NUM_CLASSES = 38 + 1  # Deetas has 38 +status classes with background
+    NUM_CLASSES = NUM_CLASSES  # Deetas has 38 +static_action classes with background
 
 
 ###################################################################################################################
@@ -110,14 +124,13 @@ class CocoDataset(utils.Dataset):
         print("load_data module :", "\n")
         
         ### annotation path
-        # annotation_path = "/home/dblab/maeng_space/output_submodule/deetas/data_21_11_10/json_obj/on_off_{}.json".format(subset)
-        annotation_path = "/home/dblab/maeng_space/output_submodule/deetas/data_21_12_02/json_obj/status_{}.json".format(subset)
+        annotation_path = os.path.join(ANNOTATION_ROOT_PATH, TRAIN_DATA_CATEGOREIS + '_{}.json'.format(subset))
         coco = COCO(annotation_path)
         print("annotation path :", annotation_path, "\n")
         
         ### image root path
         # image_dir = "{}/image".format(dataset_dir)
-        image_dir = '/home/dblab/maeng_space/dataset/deetas/image_integrated'
+        image_dir = IMAGE_ROOT_PATH
 
         print("****************************************************************************")
         print("image_root_path :", image_dir, "\n",)
@@ -297,6 +310,10 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
     eval_type: "bbox" or "segm" for bounding box or segmentation evaluation
     limit: if not 0, it's the number of images to use for evaluation
     """
+    print("****************************************************************************")
+    print("evaluate_mAP :", "\n")
+    print("limit :", limit)
+
     # Pick COCO images from the dataset
     image_ids = image_ids or dataset.image_ids
 
@@ -331,7 +348,19 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
     # Load results. This modifies results with additional attributes.
     coco_results = coco.loadRes(results)
 
-    # Evaluate
+    # Evaluate (each)
+    for catId in coco.getCatIds():
+        print("****************************************************************************")
+        print("categoty_id :", catId)
+        cocoEval = COCOeval(coco, coco_results, eval_type)
+        cocoEval.params.catIds = [catId]
+        cocoEval.evaluate()
+        cocoEval.accumulate()
+        cocoEval.summarize()
+
+    # Evaluate (all)
+    print("****************************************************************************")
+    print("categoty_id :", coco.getCatIds)
     cocoEval = COCOeval(coco, coco_results, eval_type)
     cocoEval.params.imgIds = coco_image_ids
     cocoEval.evaluate()
@@ -355,7 +384,7 @@ if __name__ == '__main__':
     parser.add_argument("command",
                         metavar="<command>",
                         help="'train' or 'evaluate' on MS COCO")
-    parser.add_argument('--dataset', required=True,
+    parser.add_argument('--dataset', required=False,
                         metavar="/path/to/coco/",
                         help='Directory of the MS-COCO dataset')
     parser.add_argument('--year', required=False,
@@ -370,7 +399,7 @@ if __name__ == '__main__':
                         metavar="/path/to/logs/",
                         help='Logs and checkpoints directory (default=logs/)')
     parser.add_argument('--limit', required=False,
-                        default=500,
+                        default=99999,
                         metavar="<image count>",
                         help='Images to use for evaluation (default=500)')
     parser.add_argument('--download', required=False,
@@ -413,6 +442,8 @@ if __name__ == '__main__':
     # Select weights file to load
     if args.model.lower() == "coco":
         model_path = COCO_MODEL_PATH
+    elif args.model.lower() == "custom":
+        model_path = CUSTOM_MODEL_PATH
     elif args.model.lower() == "last":
         # Find last trained weights
         model_path = model.find_last()
@@ -449,8 +480,8 @@ if __name__ == '__main__':
         print("Training network heads")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=40,
-                    # epochs=30,
+                    # epochs=40,
+                    epochs=30,
                     layers='heads',
                     augmentation=augmentation)
 
@@ -459,8 +490,8 @@ if __name__ == '__main__':
         print("Fine tune Resnet stage 4 and up")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=120,
-                    # epochs=90,
+                    # epochs=120,
+                    epochs=90,
                     layers='4+',
                     augmentation=augmentation)
 
@@ -469,8 +500,8 @@ if __name__ == '__main__':
         print("Fine tune all layers")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE / 10,
-                    epochs=160,
-                    # epochs=120,
+                    # epochs=160,
+                    epochs=120,
                     layers='all',
                     augmentation=augmentation)
 

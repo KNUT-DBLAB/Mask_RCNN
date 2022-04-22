@@ -49,9 +49,10 @@ import shutil
 
 from PIL import Image
 
+
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../")
-CURRENT_DIR = os.path.abspath("./")
+HOME_DIR = os.path.expanduser('~')
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
@@ -61,10 +62,28 @@ from mrcnn import model as modellib, utils
 # Path to trained weights file
 COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 
+OUTPUT_DIR = '../../../../../dataset_2021/Deetas/output_Mask_RCNN'
+ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
+
+IMAGE_ROOT_PATH = '../../../../../../../../mnt/4T_01/Deetas/image/'
+# IMAGE_ROOT_PATH = '../../../../../dataset_2021/Deetas/image_whole/'
+ANNOTATION_ROOT_PATH = '../../../../../dataset_2021/Deetas/data_22_04_12/json_JSM/'
+
+TRAIN_DATA_CATEGOREIS = 'segmentation'
+
+NUM_CLASSES = 25 + 1  # Deetas has 25 classes
+
+FIRST_STAGE_EPOCH = 2
+SECOND_STAGE_EPOCH = 4
+THIRD_STAGE_EPOCH = 6
+
+CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
+
 # Directory to save logs and model checkpoints, if not provided
 # through the command line argument --logs
-DEFAULT_LOGS_DIR = os.path.join(CURRENT_DIR, "output_maeng/logs")
+DEFAULT_LOGS_DIR = ROOT_MODEL_PATH
 DEFAULT_DATASET_YEAR = ""
+
 
 ############################################################
 #  Configurations
@@ -105,7 +124,7 @@ class Deetas_Config(Config):
     GPU_COUNT = 1
 
     # Number of classes (including background)
-    NUM_CLASSES = 1 + 25  # Deetas has 25 classes
+    NUM_CLASSES = NUM_CLASSES
 
 
 ############################################################
@@ -129,23 +148,18 @@ class CocoDataset(utils.Dataset):
         if auto_download is True:
             self.auto_download(dataset_dir, subset, year)
 
-        # coco = COCO("{}/annotations/instances_{}{}.json".format(dataset_dir, subset, year))
-
         ### annotation path
-        annotation_path = "{}/json_obj/seg_{}.json".format(dataset_dir, subset)
+        annotation_path = ANNOTATION_ROOT_PATH + TRAIN_DATA_CATEGOREIS + "_{}.json".format(subset)
         coco = COCO(annotation_path)
-        # coco = COCO("{}/back_up/json_obj/seg_{}.json".format(dataset_dir, subset))
 
         print("****************************************************************************")
-        print("compare raw :", "/home/dblab/maeng_space/dataset/deetas/data_21_10_21/json_obj")
         print("annotation path :", annotation_path, "\n")
         
         
         ### image root path
-        image_dir = "{}/image".format(dataset_dir)
+        image_dir = IMAGE_ROOT_PATH
 
         print("****************************************************************************")
-        print("compare raw :", "/home/dblab/maeng_space/dataset/deetas/data_21_10_21/image")
         print("image_root_path :", image_dir, "\n")
 
         ### Load all classes or a subset?
@@ -355,6 +369,17 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
     coco_results = coco.loadRes(results)
 
     # Evaluate
+    for catId in coco.getCatIds():
+        print("****************************************************************************")
+        print("categoty_id :", catId)
+        cocoEval = COCOeval(coco, coco_results, eval_type)
+        cocoEval.params.catIds = [catId]
+        cocoEval.evaluate()
+        cocoEval.accumulate()
+        cocoEval.summarize()
+            
+    print("****************************************************************************")
+    print("categoty_id :", coco.getCatIds)
     cocoEval = COCOeval(coco, coco_results, eval_type)
     cocoEval.params.imgIds = coco_image_ids
     cocoEval.evaluate()
@@ -380,7 +405,7 @@ if __name__ == '__main__':
     parser.add_argument("command",
                         metavar="<command>",
                         help="'train' or 'evaluate' on MS COCO")
-    parser.add_argument('--dataset', required=True,
+    parser.add_argument('--dataset', required=False,
                         metavar="/path/to/coco/",
                         help='Directory of the MS-COCO dataset')
     parser.add_argument('--year', required=False,
@@ -395,7 +420,7 @@ if __name__ == '__main__':
                         metavar="/path/to/logs/",
                         help='Logs and checkpoints directory (default=logs/)')
     parser.add_argument('--limit', required=False,
-                        default=500,
+                        default=0,
                         metavar="<image count>",
                         help='Images to use for evaluation (default=500)')
     parser.add_argument('--download', required=False,
@@ -474,8 +499,7 @@ if __name__ == '__main__':
         print("Training network heads")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    # epochs=40,
-                    epochs=30,
+                    epochs=FIRST_STAGE_EPOCH,
                     layers='heads',
                     augmentation=augmentation)
 
@@ -484,8 +508,7 @@ if __name__ == '__main__':
         print("Fine tune Resnet stage 4 and up")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    # epochs=120,
-                    epochs=90,
+                    epochs=SECOND_STAGE_EPOCH,
                     layers='4+',
                     augmentation=augmentation)
 
@@ -494,8 +517,7 @@ if __name__ == '__main__':
         print("Fine tune all layers")
         model.train(dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE / 10,
-                    # epochs=160,
-                    epochs=120,
+                    epochs=THIRD_STAGE_EPOCH,
                     layers='all',
                     augmentation=augmentation)
 

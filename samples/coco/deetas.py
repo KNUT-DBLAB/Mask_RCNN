@@ -41,6 +41,7 @@ import imgaug  # https://github.com/aleju/imgaug (pip3 install imgaug)
 # Note: Edit PythonAPI/Makefile and replace "python" with "python3".
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
+# from pycocotools.cocoeval_with_log import COCOeval_csv
 from pycocotools import mask as maskUtils
 
 import zipfile
@@ -65,7 +66,7 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 OUTPUT_DIR = '../../../../../dataset_2021/Deetas/output_Mask_RCNN'
 ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
 
-IMAGE_ROOT_PATH = '../../../../../../../../mnt/4T_01/Deetas/image/'
+IMAGE_ROOT_PATH = '../../../../../../../../mnt/hdd_02_4T/Deetas/image'
 # IMAGE_ROOT_PATH = '../../../../../dataset_2021/Deetas/image_whole/'
 ANNOTATION_ROOT_PATH = '../../../../../dataset_2021/Deetas/data_22_04_12/json_JSM/'
 
@@ -73,9 +74,9 @@ TRAIN_DATA_CATEGOREIS = 'segmentation'
 
 NUM_CLASSES = 25 + 1  # Deetas has 25 classes
 
-FIRST_STAGE_EPOCH = 2
-SECOND_STAGE_EPOCH = 4
-THIRD_STAGE_EPOCH = 6
+FIRST_STAGE_EPOCH = 30
+SECOND_STAGE_EPOCH = 90
+THIRD_STAGE_EPOCH = 120
 
 CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
 

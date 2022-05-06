@@ -41,6 +41,7 @@ import imgaug  # https://github.com/aleju/imgaug (pip3 install imgaug)
 # Note: Edit PythonAPI/Makefile and replace "python" with "python3".
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
+from pycocotools.cocoeval_log import COCOeval_log
 from pycocotools import mask as maskUtils
 
 import zipfile
@@ -67,15 +68,15 @@ ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
 
 IMAGE_ROOT_PATH = '../../../../../../../../mnt/4T_01/Deetas/image/'
 # IMAGE_ROOT_PATH = '../../../../../dataset_2021/Deetas/image_whole/'
-ANNOTATION_ROOT_PATH = '../../../../../dataset_2021/Deetas/data_22_04_12/json_JSM/'
+ANNOTATION_ROOT_PATH = '../../../../../dataset_2021/Deetas/data_22_04_12/json_MaskRCNN_large/'
 
-TRAIN_DATA_CATEGOREIS = 'segmentation'
+TRAIN_DATA_CATEGOREIS = 'static_action'
 
-NUM_CLASSES = 25 + 1  # Deetas has 25 classes
+NUM_CLASSES = 6 + 1  # Deetas has 25 classes
 
-FIRST_STAGE_EPOCH = 2
-SECOND_STAGE_EPOCH = 4
-THIRD_STAGE_EPOCH = 6
+FIRST_STAGE_EPOCH = 30
+SECOND_STAGE_EPOCH = 90
+THIRD_STAGE_EPOCH = 120
 
 CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
 
@@ -367,21 +368,31 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
 
     # Load results. This modifies results with additional attributes.
     coco_results = coco.loadRes(results)
+    cocoEval = COCOeval(coco, coco_results, eval_type)
+    COCOeval_Log = COCOeval_log(coco, coco_results, eval_type)
 
     # Evaluate
     for catId in coco.getCatIds():
         print("****************************************************************************")
         print("categoty_id :", catId)
-        cocoEval = COCOeval(coco, coco_results, eval_type)
-        cocoEval.params.catIds = [catId]
-        cocoEval.evaluate()
-        cocoEval.accumulate()
-        cocoEval.summarize()
-            
-    print("****************************************************************************")
-    print("categoty_id :", coco.getCatIds)
-    cocoEval = COCOeval(coco, coco_results, eval_type)
-    cocoEval.params.imgIds = coco_image_ids
+        COCOeval_Log.params.catIds = [catId]
+        COCOeval_Log.params.imgIds = image_ids
+        COCOeval_Log.params.iouThrs = [0.5]
+        COCOeval_Log.params.maxDets = [100]
+        COCOeval_Log.params.areaRng = [[0 ** 2, 1e5 ** 2]]
+        COCOeval_Log.params.areaRngLbl = ['all']
+        
+        COCOeval_Log.evaluate()
+        COCOeval_Log.accumulate()
+        COCOeval_Log.summarize()
+    
+    cocoEval.params.catIds = coco.getCatIds()
+    cocoEval.params.imgIds = image_ids
+    cocoEval.params.iouThrs = [0.5]
+    cocoEval.params.maxDets = [100]
+    cocoEval.params.areaRng = [[0 ** 2, 1e5 ** 2]]
+    cocoEval.params.areaRngLbl = ['all']
+    
     cocoEval.evaluate()
     cocoEval.accumulate()
     cocoEval.summarize()
@@ -527,7 +538,11 @@ if __name__ == '__main__':
         coco = dataset_val.load_coco(args.dataset, "test", year=args.year, return_coco=True, auto_download=args.download)
         dataset_val.prepare()
         print("Running COCO evaluation on {} images.".format(args.limit))
+        
+        print("****************************************************************************")
+        print('all cat_id :', coco.getCatIds())
         evaluate_coco(model, dataset_val, coco, "bbox", limit=int(args.limit))
+        
     else:
         print("'{}' is not recognized. "
               "Use 'train' or 'evaluate'".format(args.command))

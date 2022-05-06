@@ -66,7 +66,7 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 OUTPUT_DIR = '../../../../../dataset_2021/Deetas/output_Mask_RCNN'
 ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
 
-IMAGE_ROOT_PATH = '../../../../../../../../mnt/4T_01/Deetas/image/'
+IMAGE_ROOT_PATH = '../../../../../../../../mnt/hdd_02_4T/Deetas/image'
 # IMAGE_ROOT_PATH = '../../../../../dataset_2021/Deetas/image_whole/'
 ANNOTATION_ROOT_PATH = '../../../../../dataset_2021/Deetas/data_22_04_12/json_MaskRCNN_large/'
 

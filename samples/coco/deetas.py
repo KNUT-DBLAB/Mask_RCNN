@@ -51,46 +51,51 @@ import shutil
 from PIL import Image
 
 
-# Root directory of the project
-ROOT_DIR = os.path.abspath("../")
-HOME_DIR = os.path.expanduser('~')
+#### Root directory of the project
+GIT_DIR = os.path.abspath("../")
 
-# Import Mask RCNN
-sys.path.append(ROOT_DIR)  # To find local version of the library
+#### Import Mask RCNN
+sys.path.append(GIT_DIR)  # To find local version of the library
 from mrcnn.config import Config
 from mrcnn import model as modellib, utils
 
-# Path to trained weights file
-COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
+#### define Dorker Root dir and User dir
+ROOT_DIR = '/maeng_space'
+USER_DIR = ROOT_DIR + '/home/dblab'
+# ROOT_DIR = '/dblab/home/dblab/maeng_space'
 
-OUTPUT_DIR = '../../../../../dataset_2021/Deetas/output_Mask_RCNN'
-ROOT_MODEL_PATH = os.path.join(OUTPUT_DIR, 'logs')
+#### Path to trained weights file
+COCO_MODEL_PATH = os.path.join(GIT_DIR, "mask_rcnn_coco.h5")
+IMAGE_ROOT_PATH = ROOT_DIR + '/mnt/4T_01/Deetas/image'
+ANNOTATION_ROOT_PATH = USER_DIR + '/maeng_space/Data_and_output/Deetas/22_04_12/json_MaskRCNN_large_02'
+OUTPUT_DIR = ANNOTATION_ROOT_PATH + '/model'
 
-IMAGE_ROOT_PATH = '../../../../../../../../mnt/hdd_02_4T/Deetas/image'
-# IMAGE_ROOT_PATH = '../../../../../dataset_2021/Deetas/image_whole/'
-ANNOTATION_ROOT_PATH = '../../../../../dataset_2021/Deetas/data_22_04_12/json_MaskRCNN_large/'
+CUSTOM_MODEL_PATH = os.path.join(OUTPUT_DIR, '/mask_rcnn_deetas_0080.h5')
+# CUSTOM_MODEL_PATH = os.path.join(OUTPUT_DIR, 'bounding_box_05_10/mask_rcnn_deetas_0119.h5')
 
-TRAIN_DATA_CATEGOREIS = 'static_action'
-
-NUM_CLASSES = 6 + 1  # Deetas has 25 classes
-
-FIRST_STAGE_EPOCH = 30
-SECOND_STAGE_EPOCH = 90
-THIRD_STAGE_EPOCH = 120
-
-CUSTOM_MODEL_PATH = os.path.join(ROOT_MODEL_PATH, 'deetas20211213T1844/mask_rcnn_deetas_0159.h5')
-
-# Directory to save logs and model checkpoints, if not provided
-# through the command line argument --logs
-DEFAULT_LOGS_DIR = ROOT_MODEL_PATH
+DEFAULT_LOGS_DIR = OUTPUT_DIR # Directory to save logs and model checkpoints, if not provided / through the command line argument --logs
 DEFAULT_DATASET_YEAR = ""
 
+#### epoch
+FIRST_STAGE_EPOCH = 50
+SECOND_STAGE_EPOCH = 150
+THIRD_STAGE_EPOCH = 200
 
-############################################################
+
+#### select mode 'static_action', 'segmentation', 'bounding_box'
+# TRAIN_DATA_CATEGOREIS = 'bounding_box'
+# NUM_CLASSES = 4 + 1
+
+TRAIN_DATA_CATEGOREIS = 'segmentation'
+NUM_CLASSES = 9 + 1
+
+# TRAIN_DATA_CATEGOREIS = 'static_action'
+# NUM_CLASSES = 6 + 1
+
+
+#############################################################################################################################
 #  Configurations
-############################################################
-
-
+#############################################################################################################################
 class CocoConfig(Config):
     """Configuration for training on MS COCO.
     Derives from the base Config class and overrides values specific
@@ -128,10 +133,9 @@ class Deetas_Config(Config):
     NUM_CLASSES = NUM_CLASSES
 
 
-############################################################
+#############################################################################################################################
 #  Dataset
-############################################################
-
+#############################################################################################################################
 class CocoDataset(utils.Dataset):
     def load_coco(self, dataset_dir, subset, year=DEFAULT_DATASET_YEAR, class_ids=None,
                   class_map=None, return_coco=False, auto_download=False):
@@ -149,52 +153,40 @@ class CocoDataset(utils.Dataset):
         if auto_download is True:
             self.auto_download(dataset_dir, subset, year)
 
-        ### annotation path
-        annotation_path = ANNOTATION_ROOT_PATH + TRAIN_DATA_CATEGOREIS + "_{}.json".format(subset)
-        coco = COCO(annotation_path)
-
         print("****************************************************************************")
+        #### annotation path
+        annotation_path = ANNOTATION_ROOT_PATH + '/' + TRAIN_DATA_CATEGOREIS + "_{}.json".format(subset)
+        coco = COCO(annotation_path)
         print("annotation path :", annotation_path, "\n")
         
         
-        ### image root path
-        image_dir = IMAGE_ROOT_PATH
-
         print("****************************************************************************")
+        #### image root path
+        image_dir = IMAGE_ROOT_PATH
         print("image_root_path :", image_dir, "\n")
 
-        ### Load all classes or a subset?
+        #### Load all classes or a subset?
         if not class_ids:
-            ### All classes
+            #### All classes
             class_ids = sorted(coco.getCatIds())
 
-        ### All images or a subset?
+        #### All images or a subset?
         if class_ids:
             image_ids = []
             for id in class_ids:
                 image_ids.extend(list(coco.getImgIds(catIds=[id])))
-            ### Remove duplicates
+            #### Remove duplicates
             image_ids = list(set(image_ids))
         else:
-            ### All images
+            #### All images
             image_ids = list(coco.imgs.keys())
 
-        ### Add classes
+        #### Add classes
         for i in class_ids:
             self.add_class("coco", i, coco.loadCats(i)[0]["name"])
 
-        ### Add images
         print("****************************************************************************")
-        # test_path = os.path.join(image_dir, coco.imgs[407]['file_name'])
-        # print(test_path)
-        # image = Image.open(test_path)
-        # print(image)
-
-        # print(image_ids)
-        # print(len(image_ids))
-        # print(type(image_ids))
-        # print(type(image_ids[0]))
-        
+        #### Add images
         for i in image_ids:
             self.add_image(
                 "coco", image_id=i,
@@ -298,9 +290,9 @@ class CocoDataset(utils.Dataset):
         return m
 
 
-############################################################
+#############################################################################################################################
 #  COCO Evaluation
-############################################################
+#############################################################################################################################
 
 def build_coco_results(dataset, image_ids, rois, class_ids, scores, masks):
     """Arrange resutls to match COCO specs in http://cocodataset.org/#format
@@ -329,7 +321,7 @@ def build_coco_results(dataset, image_ids, rois, class_ids, scores, masks):
     return results
 
 
-def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=None):
+def evaluate_coco(model, dataset, coco, eval_type="segm", limit=0, image_ids=None):
     """Runs official COCO evaluation.
     dataset: A Dataset object with valiadtion data
     eval_type: "bbox" or "segm" for bounding box or segmentation evaluation
@@ -385,7 +377,9 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
         COCOeval_Log.evaluate()
         COCOeval_Log.accumulate()
         COCOeval_Log.summarize()
-    
+        
+    print("****************************************************************************")
+    print("categoty_id :", coco.getCatIds())
     cocoEval.params.catIds = coco.getCatIds()
     cocoEval.params.imgIds = image_ids
     cocoEval.params.iouThrs = [0.5]
@@ -402,11 +396,9 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
     print("Total time: ", time.time() - t_start)
 
 
-############################################################
+#############################################################################################################################
 #  Training
-############################################################
-
-
+#############################################################################################################################
 if __name__ == '__main__':
     import argparse
 
@@ -472,16 +464,11 @@ if __name__ == '__main__':
                                   model_dir=args.logs)
 
     # Select weights file to load
-    if args.model.lower() == "coco":
-        model_path = COCO_MODEL_PATH
-    elif args.model.lower() == "last":
-        # Find last trained weights
-        model_path = model.find_last()
-    elif args.model.lower() == "imagenet":
-        # Start from ImageNet trained weights
-        model_path = model.get_imagenet_weights()
-    else:
-        model_path = args.model
+    if args.model.lower() == "coco": model_path = COCO_MODEL_PATH
+    elif args.model.lower() == "custom": model_path = CUSTOM_MODEL_PATH
+    elif args.model.lower() == "last": model_path = model.find_last() # Find last trained weights
+    elif args.model.lower() == "imagenet": model_path = model.get_imagenet_weights() # Start from ImageNet trained weights
+    else : model_path = args.model
 
     # Load weights
     print("Loading weights ", model_path)
